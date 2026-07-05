@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Referenced from AddTaskModal via Tailwind's arbitrary animate-[...]
+   utility — Tailwind only emits the `animation:` declaration for that
+   utility, the @keyframes themselves have to exist somewhere in the
+   cascade, hence defining them here rather than inline. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
