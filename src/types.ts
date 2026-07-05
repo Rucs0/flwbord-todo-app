@@ -19,3 +19,7 @@ export interface Task {
   // readers fall back to "default" rather than requiring a migration.
   color?: CardColor;
 }
+
+// Where a dragged card would land if dropped right now: next to another
+// card (before/after it), or `null` to mean "append to the column's end".
+export type DropTarget = { taskId: string; position: "before" | "after" } | null;

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import type { DragEvent } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import type { Status, Task } from "../types";
+import type { DragState } from "../hooks/useDragAndDrop";
 import TaskCard from "./TaskCard";
 
 export type ColumnAccent = "slate" | "amber" | "green";
@@ -31,16 +31,18 @@ const ACCENT_STYLES: Record<
   },
 };
 
-type DropTarget = { taskId: string; position: "before" | "after" } | null;
-
 interface ColumnProps {
   title: string;
   status: Status;
   accent: ColumnAccent;
   tasks: Task[];
+  dragState: DragState | null;
   onUpdateTask: (id: string, updates: Partial<Omit<Task, "id">>) => void;
   onDeleteTask: (id: string) => void;
-  onMoveTask: (taskId: string, status: Status, target: DropTarget) => void;
+  onCardPointerDown: (
+    taskId: string,
+    event: ReactPointerEvent<HTMLElement>,
+  ) => void;
 }
 
 function Column({
@@ -48,69 +50,23 @@ function Column({
   status,
   accent,
   tasks,
+  dragState,
   onUpdateTask,
   onDeleteTask,
-  onMoveTask,
+  onCardPointerDown,
 }: ColumnProps) {
-  // Whether a dragged card is currently over this column at all — purely
-  // visual (highlights the whole drop zone).
-  const [isOver, setIsOver] = useState(false);
-
-  // Which task the dragged card would land before/after if dropped right
-  // now — drives the thin insertion-line indicator. null means "no specific
-  // card targeted", i.e. it'll be appended to the end of the column.
-  const [dropTarget, setDropTarget] = useState<DropTarget>(null);
-
   const accentStyles = ACCENT_STYLES[accent];
 
-  function handleColumnDragOver(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault(); // required for onDrop to fire at all
-    setDropTarget(null);
-  }
-
-  function handleDragEnter() {
-    setIsOver(true);
-  }
-
-  function handleDragLeave(event: DragEvent<HTMLDivElement>) {
-    // dragleave fires every time the pointer crosses a child element's
-    // boundary too, not just when it truly exits the column — only clear
-    // state when relatedTarget is outside this column entirely.
-    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      setIsOver(false);
-      setDropTarget(null);
-    }
-  }
-
-  function handleDrop(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    const taskId = event.dataTransfer.getData("text/plain");
-    if (taskId) onMoveTask(taskId, status, dropTarget);
-    setIsOver(false);
-    setDropTarget(null);
-  }
-
-  function handleCardDragOver(taskId: string, event: DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    // Stop this from also bubbling to the column's onDragOver, which would
-    // otherwise reset dropTarget to null (append-to-end) right after we set
-    // a precise one here.
-    event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
-    const midpoint = rect.top + rect.height / 2;
-    setDropTarget({
-      taskId,
-      position: event.clientY < midpoint ? "before" : "after",
-    });
-  }
+  // Only one column can be the live drop target at a time — derived here
+  // from the shared dragState rather than tracked locally, since a plain
+  // pointer move can carry the drag from this column into a sibling one.
+  const isOver = dragState?.overStatus === status;
+  const dropTarget = isOver ? dragState.dropTarget : null;
 
   return (
     <div
-      onDragEnter={handleDragEnter}
-      onDragOver={handleColumnDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className={`flex h-full min-w-[240px] flex-1 flex-col rounded-lg border border-slate-200 border-t-4 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800/50 ${accentStyles.border} ${
+      data-column-status={status}
+      className={`flex h-full w-[88vw] max-w-xs shrink-0 snap-center flex-col rounded-lg border border-slate-200 border-t-4 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800/50 sm:w-auto sm:max-w-none sm:min-w-[240px] sm:flex-1 sm:shrink ${accentStyles.border} ${
         isOver
           ? "bg-indigo-50 ring-2 ring-indigo-400 dark:bg-indigo-950/40 dark:ring-indigo-500"
           : ""
@@ -153,19 +109,17 @@ function Column({
           </div>
         ) : (
           tasks.map((task) => (
-            <div
-              key={task.id}
-              onDragOver={(event) => handleCardDragOver(task.id, event)}
-              className="relative"
-            >
+            <div key={task.id} className="relative">
               {dropTarget?.taskId === task.id &&
                 dropTarget.position === "before" && (
                   <div className="absolute -top-1.5 left-0 right-0 h-0.5 rounded bg-indigo-500" />
                 )}
               <TaskCard
                 task={task}
+                isDragging={dragState?.taskId === task.id}
                 onUpdate={onUpdateTask}
                 onDelete={onDeleteTask}
+                onPointerDown={(event) => onCardPointerDown(task.id, event)}
               />
               {dropTarget?.taskId === task.id &&
                 dropTarget.position === "after" && (

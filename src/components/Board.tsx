@@ -1,14 +1,16 @@
+import type { PointerEvent as ReactPointerEvent } from "react";
 import type { Status, Task } from "../types";
+import type { DragState } from "../hooks/useDragAndDrop";
 import Column, { type ColumnAccent } from "./Column";
 
 interface BoardProps {
   tasks: Task[];
+  dragState: DragState | null;
   onUpdateTask: (id: string, updates: Partial<Omit<Task, "id">>) => void;
   onDeleteTask: (id: string) => void;
-  onMoveTask: (
+  onCardPointerDown: (
     taskId: string,
-    status: Status,
-    target: { taskId: string; position: "before" | "after" } | null,
+    event: ReactPointerEvent<HTMLElement>,
   ) => void;
 }
 
@@ -20,9 +22,15 @@ const COLUMNS: { status: Status; title: string; accent: ColumnAccent }[] = [
 
 // Board just filters and lays out columns — no state of its own,
 // so it stays a plain function with no hooks.
-function Board({ tasks, onUpdateTask, onDeleteTask, onMoveTask }: BoardProps) {
+function Board({
+  tasks,
+  dragState,
+  onUpdateTask,
+  onDeleteTask,
+  onCardPointerDown,
+}: BoardProps) {
   return (
-    <div className="flex h-[calc(100vh-64px)] gap-3 overflow-x-auto bg-slate-100 p-4 dark:bg-slate-900 sm:gap-4 sm:p-6">
+    <div className="flex h-[calc(100vh-64px)] snap-x snap-mandatory gap-3 overflow-x-auto bg-slate-100 p-4 dark:bg-slate-900 sm:snap-none sm:gap-4 sm:p-6">
       {COLUMNS.map((column) => (
         <Column
           key={column.status}
@@ -30,9 +38,10 @@ function Board({ tasks, onUpdateTask, onDeleteTask, onMoveTask }: BoardProps) {
           status={column.status}
           accent={column.accent}
           tasks={tasks.filter((task) => task.status === column.status)}
+          dragState={dragState}
           onUpdateTask={onUpdateTask}
           onDeleteTask={onDeleteTask}
-          onMoveTask={onMoveTask}
+          onCardPointerDown={onCardPointerDown}
         />
       ))}
     </div>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import type { Status, Task } from "./types";
+import type { DropTarget, Status, Task } from "./types";
 import Board from "./components/Board";
 import AddTaskModal from "./components/AddTaskModal";
+import DragPreview from "./components/DragPreview";
 import useLocalStorage from "./hooks/useLocalStorage";
+import useDragAndDrop from "./hooks/useDragAndDrop";
 
 type Theme = "light" | "dark";
 
@@ -114,11 +116,7 @@ function App() {
   // the Column last measured — removing it before inserting would shift
   // every index after it by one. Re-finding the anchor by id in the
   // already-filtered `rest` array sidesteps that off-by-one entirely.
-  function handleMoveTask(
-    taskId: string,
-    status: Status,
-    target: { taskId: string; position: "before" | "after" } | null,
-  ) {
+  function handleMoveTask(taskId: string, status: Status, target: DropTarget) {
     setTasks((prev) => {
       const taskToMove = prev.find((task) => task.id === taskId);
       if (!taskToMove) return prev;
@@ -145,6 +143,11 @@ function App() {
       return [...rest.slice(0, insertAt), movedTask, ...rest.slice(insertAt)];
     });
   }
+
+  const { dragState, handlePointerDown } = useDragAndDrop(handleMoveTask);
+  const draggedTask = dragState
+    ? tasks.find((task) => task.id === dragState.taskId)
+    : undefined;
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-900">
@@ -213,14 +216,22 @@ function App() {
       </header>
       <Board
         tasks={tasks}
+        dragState={dragState}
         onUpdateTask={handleUpdateTask}
         onDeleteTask={handleDeleteTask}
-        onMoveTask={handleMoveTask}
+        onCardPointerDown={handlePointerDown}
       />
       {isModalOpen && (
         <AddTaskModal
           onAdd={handleAddTask}
           onClose={() => setIsModalOpen(false)}
+        />
+      )}
+      {dragState && draggedTask && (
+        <DragPreview
+          task={draggedTask}
+          x={dragState.pointerX}
+          y={dragState.pointerY}
         />
       )}
     </div>
