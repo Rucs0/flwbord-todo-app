@@ -14,17 +14,19 @@ const ACCENT_STYLES: Record<
 > = {
   slate: {
     border: "border-t-slate-400",
-    badge: "bg-slate-200 text-slate-600",
+    badge: "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
     dot: "bg-slate-400",
   },
   amber: {
     border: "border-t-amber-400",
-    badge: "bg-amber-100 text-amber-700",
+    badge:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
     dot: "bg-amber-400",
   },
   green: {
     border: "border-t-green-400",
-    badge: "bg-green-100 text-green-700",
+    badge:
+      "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
     dot: "bg-green-400",
   },
 };
@@ -108,14 +110,18 @@ function Column({
       onDragOver={handleColumnDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex h-full min-w-[240px] flex-1 flex-col rounded-lg border border-slate-200 border-t-4 bg-slate-50 transition-colors ${accentStyles.border} ${
-        isOver ? "bg-indigo-50 ring-2 ring-indigo-400" : ""
+      className={`flex h-full min-w-[240px] flex-1 flex-col rounded-lg border border-slate-200 border-t-4 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800/50 ${accentStyles.border} ${
+        isOver
+          ? "bg-indigo-50 ring-2 ring-indigo-400 dark:bg-indigo-950/40 dark:ring-indigo-500"
+          : ""
       }`}
     >
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
         <div className="flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${accentStyles.dot}`} />
-          <h2 className="text-base font-semibold text-slate-700">{title}</h2>
+          <h2 className="text-base font-semibold text-slate-700 dark:text-slate-200">
+            {title}
+          </h2>
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-xs font-medium ${accentStyles.badge}`}
@@ -125,7 +131,7 @@ function Column({
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-3">
         {tasks.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-10 text-slate-300">
+          <div className="flex flex-col items-center gap-2 py-10 text-slate-300 dark:text-slate-600">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -141,7 +147,9 @@ function Column({
                 d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"
               />
             </svg>
-            <p className="text-sm italic text-slate-400">No tasks yet</p>
+            <p className="text-sm italic text-slate-400 dark:text-slate-500">
+              No tasks yet
+            </p>
           </div>
         ) : (
           tasks.map((task) => (

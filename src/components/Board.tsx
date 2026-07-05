@@ -22,7 +22,7 @@ const COLUMNS: { status: Status; title: string; accent: ColumnAccent }[] = [
 // so it stays a plain function with no hooks.
 function Board({ tasks, onUpdateTask, onDeleteTask, onMoveTask }: BoardProps) {
   return (
-    <div className="flex h-[calc(100vh-64px)] gap-3 overflow-x-auto bg-slate-100 p-4 sm:gap-4 sm:p-6">
+    <div className="flex h-[calc(100vh-64px)] gap-3 overflow-x-auto bg-slate-100 p-4 dark:bg-slate-900 sm:gap-4 sm:p-6">
       {COLUMNS.map((column) => (
         <Column
           key={column.status}

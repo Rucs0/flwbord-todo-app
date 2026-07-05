@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Tailwind v4 defaults `dark:` to the `prefers-color-scheme` media query;
+   this overrides it to key off a `.dark` class on the root element instead,
+   so the toggle in App.tsx can control it independent of OS settings. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Referenced from AddTaskModal via Tailwind's arbitrary animate-[...]
    utility — Tailwind only emits the `animation:` declaration for that
    utility, the @keyframes themselves have to exist somewhere in the

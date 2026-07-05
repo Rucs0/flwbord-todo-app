@@ -23,15 +23,34 @@ const CARD_COLOR_OPTIONS: CardColor[] = [
 // Column.tsx's ACCENT_STYLES is written this way.
 const CARD_COLOR_STYLES: Record<CardColor, { card: string; swatch: string }> = {
   default: {
-    card: "border-slate-200 bg-white",
-    swatch: "border border-slate-300 bg-white",
+    card: "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800",
+    swatch:
+      "border border-slate-300 bg-white dark:border-slate-500 dark:bg-slate-800",
   },
-  red: { card: "border-red-200 bg-red-50", swatch: "bg-red-400" },
-  orange: { card: "border-orange-200 bg-orange-50", swatch: "bg-orange-400" },
-  yellow: { card: "border-yellow-200 bg-yellow-50", swatch: "bg-yellow-400" },
-  green: { card: "border-green-200 bg-green-50", swatch: "bg-green-400" },
-  blue: { card: "border-blue-200 bg-blue-50", swatch: "bg-blue-400" },
-  purple: { card: "border-purple-200 bg-purple-50", swatch: "bg-purple-400" },
+  red: {
+    card: "border-red-300 bg-red-100 dark:border-red-700 dark:bg-red-900/50",
+    swatch: "bg-red-500",
+  },
+  orange: {
+    card: "border-orange-300 bg-orange-100 dark:border-orange-700 dark:bg-orange-900/50",
+    swatch: "bg-orange-500",
+  },
+  yellow: {
+    card: "border-yellow-300 bg-yellow-100 dark:border-yellow-700 dark:bg-yellow-900/50",
+    swatch: "bg-yellow-500",
+  },
+  green: {
+    card: "border-green-300 bg-green-100 dark:border-green-700 dark:bg-green-900/50",
+    swatch: "bg-green-500",
+  },
+  blue: {
+    card: "border-blue-300 bg-blue-100 dark:border-blue-700 dark:bg-blue-900/50",
+    swatch: "bg-blue-500",
+  },
+  purple: {
+    card: "border-purple-300 bg-purple-100 dark:border-purple-700 dark:bg-purple-900/50",
+    swatch: "bg-purple-500",
+  },
 };
 
 // A 1x1 transparent gif, used to blank out the browser's built-in drag
@@ -158,23 +177,23 @@ function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
 
   if (isEditing) {
     return (
-      <div className="rounded-md border border-indigo-300 bg-white p-3 shadow-sm">
+      <div className="rounded-md border border-indigo-300 bg-white p-3 shadow-sm dark:border-indigo-700 dark:bg-slate-800">
         <input
           autoFocus
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-indigo-900"
         />
         <textarea
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           rows={2}
-          className="mt-2 w-full resize-none rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          className="mt-2 w-full resize-none rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-indigo-900"
         />
         <div className="mt-2 flex justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="rounded-sm text-xs text-slate-500 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+            className="rounded-sm text-xs text-slate-500 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 dark:text-slate-400 dark:hover:text-slate-200"
           >
             Cancel
           </button>
@@ -196,29 +215,33 @@ function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       onDrag={handleDrag}
       onDragEnd={handleDragEnd}
       className={`cursor-grab rounded-md border p-3 transition-colors active:cursor-grabbing ${
-        isDragging ? "border-slate-300 bg-slate-200" : `${CARD_COLOR_STYLES[cardColor].card} shadow-sm`
+        isDragging
+          ? "border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700"
+          : `${CARD_COLOR_STYLES[cardColor].card} shadow-sm`
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-medium text-slate-800">{task.title}</h3>
-        <div className="flex shrink-0 gap-1 text-xs text-slate-400">
+        <h3 className="text-sm font-medium text-slate-800 dark:text-slate-100">
+          {task.title}
+        </h3>
+        <div className="flex shrink-0 gap-1 text-xs text-slate-400 dark:text-slate-500">
           <button
             onClick={() => setIsPickerOpen((open) => !open)}
-            className="rounded-sm hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+            className="rounded-sm hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 dark:hover:text-slate-300"
             aria-label="Change card color"
           >
             🎨
           </button>
           <button
             onClick={() => setIsEditing(true)}
-            className="rounded-sm hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+            className="rounded-sm hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 dark:hover:text-slate-300"
             aria-label="Edit task"
           >
             ✎
           </button>
           <button
             onClick={() => onDelete(task.id)}
-            className="rounded-sm hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+            className="rounded-sm hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 dark:hover:text-red-400"
             aria-label="Delete task"
           >
             ✕
@@ -236,14 +259,18 @@ function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
               }}
               aria-label={`Set card color to ${color}`}
               className={`h-5 w-5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 ${CARD_COLOR_STYLES[color].swatch} ${
-                cardColor === color ? "ring-2 ring-offset-1 ring-slate-500" : ""
+                cardColor === color
+                  ? "ring-2 ring-offset-1 ring-slate-500 dark:ring-slate-300 dark:ring-offset-slate-800"
+                  : ""
               }`}
             />
           ))}
         </div>
       )}
       {task.description && (
-        <p className="mt-1 text-xs text-slate-500">{task.description}</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          {task.description}
+        </p>
       )}
     </div>
   );
