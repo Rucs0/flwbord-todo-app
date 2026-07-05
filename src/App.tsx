@@ -41,7 +41,10 @@ function App() {
   // for useState here with no other code changes, since it returns the
   // same [value, setValue] shape — every setTasks call below already
   // persists automatically.
-  const [tasks, setTasks] = useLocalStorage<Task[]>("flowboard-tasks", SAMPLE_TASKS);
+  const [tasks, setTasks] = useLocalStorage<Task[]>(
+    "flowboard-tasks",
+    SAMPLE_TASKS,
+  );
 
   // Whether the "add task" modal is showing. Pure UI state — it doesn't
   // describe a task, just what's currently rendered — so it stays local
@@ -101,17 +104,14 @@ function App() {
           -1,
         );
         const insertAt = lastIndexInColumn + 1;
-        return [
-          ...rest.slice(0, insertAt),
-          movedTask,
-          ...rest.slice(insertAt),
-        ];
+        return [...rest.slice(0, insertAt), movedTask, ...rest.slice(insertAt)];
       }
 
       const targetIndex = rest.findIndex((task) => task.id === target.taskId);
       if (targetIndex === -1) return [...rest, movedTask];
 
-      const insertAt = target.position === "before" ? targetIndex : targetIndex + 1;
+      const insertAt =
+        target.position === "before" ? targetIndex : targetIndex + 1;
       return [...rest.slice(0, insertAt), movedTask, ...rest.slice(insertAt)];
     });
   }
@@ -119,13 +119,26 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-100">
       <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <h1 className="text-xl font-bold text-slate-800">FlowBoard</h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 sm:px-4"
-        >
-          + Add Task
-        </button>
+        <h1 className="text-xl font-bold text-slate-800">FlwBord</h1>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <a
+            href="https://github.com/Rucs0/flowboard-todo-app"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="View source on GitHub"
+            className="rounded-sm p-1 text-slate-500 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+          >
+            <svg className="h-5 w-5 fill-current" aria-hidden="true">
+              <use href="/icons.svg#github-icon" />
+            </svg>
+          </a>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 sm:px-4"
+          >
+            + Add Task
+          </button>
+        </div>
       </header>
       <Board
         tasks={tasks}
